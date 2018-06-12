@@ -15,6 +15,8 @@ class CreateLoginTokensTable extends Migration
     {
         Schema::create('login_tokens', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('mail_user_id')->index()->default(0);
+            $table->string('token', 50)->index();
             $table->timestamps();
         });
     }

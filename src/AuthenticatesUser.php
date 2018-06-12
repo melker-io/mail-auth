@@ -3,6 +3,9 @@
 namespace Melkerio\MailAuth;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Melkerio\MailAuth\Models\MailUser;
 use Melkerio\MailAuth\Models\LoginToken;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -29,13 +32,36 @@ class AuthenticatesUser
 		$this->validate($this->request, [
 			'email' => 'required|email|exists:mail_users'
 		]);
+
+		return $this;
 	}
 
-	public function generateToken()
+	protected function generateToken()
 	{
-		$user = MailUser::byEmail($this->request->email);
-		
-		LoginToken::genereateFor($user);
+		$user = MailUser::whereEmail($this->request->email)->firstOrFail();
 
+		$token = LoginToken::generateFor($user);
+
+		return $this;
+	}
+
+	protected function send()
+	{
+		$user = MailUser::whereEmail($this->request->email)->firstOrFail();
+
+		$url = route('mail-auth.confirm', ['token' => $user->login_token->token]);
+		Mail::raw(
+			"<a href='{$url}'>{$url}</a>",
+			function($message) {
+				$message->to($this->request->email)
+						->subject('Login');
+			}
+		);
+	}
+
+	public function login(LoginToken $token)
+	{
+		Auth::guard('mail')->login($token->mail_user);
+		// $token->delete();
 	}
 }

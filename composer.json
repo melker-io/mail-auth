@@ -10,6 +10,11 @@
     ],
     "minimum-stability": "stable",
     "require": {},
+    "autoload": {
+        "psr-4": {
+            "Melkerio\\MailAuth\\": "src"
+        }
+    },
     "extra": {
       "laravel": {
         "providers": [

@@ -20,30 +20,11 @@ class MailAuthController extends Controller
 		$this->auth = $auth;
 	}
 
-	public function loginForm()
+	public function login($token)
 	{
-		return view('login');
-	}
-	public function login()
-	{
-		$this->auth->invite();
-
-		dd($this);	
-	}
-
-	public function store()
-	{
-		$this->auth->invite();
-
-		dd($this);
-	}
-
-	public function authenticate($token)
-	{
-		$token = LoginToken::where('token', $token)->first();
+		$token = LoginToken::where('token', $token)->firstOrFail();
 		$this->auth->login($token);
 
-		// dd( \Illuminate\Support\Facades\Auth::guard('mail'), session(), \Illuminate\Support\Facades\Auth::user() );
-		return redirect('/mail-home');
+		return redirect(config('mail-auth.login-redirect'));
 	}
 }

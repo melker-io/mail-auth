@@ -23,8 +23,7 @@ class AuthenticatesUser
 	public function invite()
 	{
 		$this->validateRequest()
-			->generateToken()
-			->send();
+			->generateToken();
 	}
 
 	protected function validateRequest()
@@ -36,13 +35,13 @@ class AuthenticatesUser
 		return $this;
 	}
 
-	protected function generateToken()
+	public static function generateToken($email)
 	{
-		$user = MailUser::whereEmail($this->request->email)->firstOrFail();
+		$user = MailUser::whereEmail($email)->firstOrFail();
 
 		$token = LoginToken::generateFor($user);
 
-		return $this;
+		return $token;
 	}
 
 	protected function send()

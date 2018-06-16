@@ -16,6 +16,9 @@ class MailAuthServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
         // $this->loadViewsFrom(__DIR__.'/../views', 'mail-auth');
         $this->loadRoutesFrom(__DIR__.'/../routes.php');
+        $this->mergeConfigFrom(
+            __DIR__.'/../mail-auth.php', 'mail-auth'
+        );
     }
 
     /**
@@ -25,6 +28,8 @@ class MailAuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind('mailAuth', function() {
+            return new MailAuth;
+        });
     }
 }
